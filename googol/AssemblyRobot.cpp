@@ -381,11 +381,13 @@ short AssemblyRobot::GetEncStatus(double(&Prf)[3],double(&Enc)[3])
 
 short AssemblyRobot::PointMove(vector<vector<double>> pAng, vector<long> pTime, unsigned int count)
 {
-    long i, j, start = 0;
+    short i, j, start = 0;
     short space[3];
     double ang[3],pos[3];
 
     InverseKinematics(lastAng, lastPos);
+
+    flag_time += pTime[count-1];
 
     lastRtn = GT_ClrSts(1, 8);
     if (lastRtn)
@@ -412,10 +414,7 @@ short AssemblyRobot::PointMove(vector<vector<double>> pAng, vector<long> pTime, 
         {
             ang[i] = pAng[j][i];
             if(j==count-1)
-            {
                 lastAng[i] = pAng[j][i];
-            }
-
         }
 
         for (i = 0; i < 3; i++)
@@ -472,6 +471,7 @@ short AssemblyRobot::PointMove(vector<vector<double>> pAng, vector<long> pTime, 
 
                 start = 1;
             }
+
             while (1)
             {
                 for (i = 0; i < 3; i++)
@@ -491,11 +491,11 @@ short AssemblyRobot::PointMove(vector<vector<double>> pAng, vector<long> pTime, 
         lastRtn = GT_PtStart((1 << (axisNumber[0] - 1)) + (1 << (axisNumber[1] - 1)) + (1 << (axisNumber[2] - 1)));
         if (lastRtn)
             return lastRtnErr = RobotFailure;
-
         start = 1;
     }
-//    if (WaitForMotionComplete(RbtAllAxis) != RobotSuccess)
-//        return lastRtnErr = RobotFailure;
+
+    if (WaitForMotionComplete(RbtAllAxis) != RobotSuccess)
+        return lastRtnErr = RobotFailure;
 
     if (GetEncStatus(lastPrfPos, lastEncPos) != RobotSuccess)
         return lastRtnErr = RobotFailure;
