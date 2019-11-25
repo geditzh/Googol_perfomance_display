@@ -33,7 +33,7 @@ short AssemblyRobot::Initial(short coor)
 		return lastRtnErr = RobotFailure;
 	}
 
-    lastRtn = GT_LoadConfig("C:/Users/df/Desktop/Googol_point_move/googol/GTS800.cfg");
+    lastRtn = GT_LoadConfig("./debug/GTS800.cfg");
 	if (lastRtn)
 	{
 		printf("GT_LoadConfig():%d\n", lastRtn);
@@ -275,20 +275,20 @@ short AssemblyRobot::Stop(short stopMode)
 
 short AssemblyRobot::WaitForMotionComplete(short moveMode)
 {
-	long sts[3];
-	double encPos[3], prfPos[3];
-	if (moveMode == RbtAllAxis)
-	{
-		do
-		{
-			lastRtn = GT_GetSts(axisNumber[0], sts, 3);
-			if (lastRtn)
-				return lastRtnErr = RobotFailure;
-		} while (!((sts[0] & 0x800) && (sts[1] & 0x800) && (sts[2] & 0x800)));
-		return RobotSuccess;
-	}
-}
+    long sts[3];
+    double encPos[3], prfPos[3];
+    if (moveMode == RbtAllAxis)
+    {
+        do
+        {
+            lastRtn = GT_GetSts(axisNumber[0], sts, 3);
+            if (lastRtn)
+                return lastRtnErr = RobotFailure;
+        } while (!((sts[0] & 0x800) && (sts[1] & 0x800) && (sts[2] & 0x800)));
 
+        return RobotSuccess;
+    }
+}
 
 short AssemblyRobot::InverseKinematics(const double(&ang)[3], double(&pos)[3])
 {
@@ -412,7 +412,10 @@ short AssemblyRobot::PointMove(vector<vector<double>> pAng, vector<long> pTime, 
         {
             ang[i] = pAng[j][i];
             if(j==count-1)
+            {
                 lastAng[i] = pAng[j][i];
+            }
+
         }
 
         for (i = 0; i < 3; i++)
@@ -469,7 +472,6 @@ short AssemblyRobot::PointMove(vector<vector<double>> pAng, vector<long> pTime, 
 
                 start = 1;
             }
-
             while (1)
             {
                 for (i = 0; i < 3; i++)
@@ -489,11 +491,11 @@ short AssemblyRobot::PointMove(vector<vector<double>> pAng, vector<long> pTime, 
         lastRtn = GT_PtStart((1 << (axisNumber[0] - 1)) + (1 << (axisNumber[1] - 1)) + (1 << (axisNumber[2] - 1)));
         if (lastRtn)
             return lastRtnErr = RobotFailure;
+
         start = 1;
     }
-
-    if (WaitForMotionComplete(RbtAllAxis) != RobotSuccess)
-        return lastRtnErr = RobotFailure;
+//    if (WaitForMotionComplete(RbtAllAxis) != RobotSuccess)
+//        return lastRtnErr = RobotFailure;
 
     if (GetEncStatus(lastPrfPos, lastEncPos) != RobotSuccess)
         return lastRtnErr = RobotFailure;
@@ -509,33 +511,6 @@ short AssemblyRobot::PointMove(double(*pAng)[3], long *pTime, unsigned int count
     double ang[3],pos[3];
 
     InverseKinematics(lastAng, lastPos);
-
-    FILE *fp = fopen("C:/Users/df/Desktop/Googol_point_move/googol/test.txt","a");
-    FILE *fp1 = fopen("C:/Users/df/Desktop/Googol_point_move/googol/time.txt","a");
-
-    cout<<count<<endl;
-    for(i=0;i<count;i++)
-    {
-        cout<<"Time:"<<pTime[i]<<"\t";
-        fprintf(fp1,"%d\n",pTime[i]+flag_time);
-        if(i != 0)
-        {
-//            cout<<"Point:"<<pAng[i][0]<<","<<pAng[i][1]<<","<<pAng[i][2]<<endl;
-//            cout<<"Error:"<<pAng[i][0]-pAng[i-1][0]<<","
-//                <<pAng[i][1]-pAng[i-1][1]<<","
-//                <<pAng[i][2]-pAng[i-1][2]<<endl;
-            cout<<"Point:"<<pAng[i][0]<<","<<pAng[i][1]<<","<<pAng[i][2]<<endl;
-            fprintf(fp,"%f\t%f\t%f\n",pAng[i][0],pAng[i][1],pAng[i][2]);
-
-        }
-        else
-        {
-            cout<<"Point:"<<pAng[i][0]<<","<<pAng[i][1]<<","<<pAng[i][2]<<endl;
-        }
-    }
-
-    fclose(fp);
-    fclose(fp1);
 
     flag_time += pTime[count-1];
 
@@ -796,7 +771,7 @@ short AssemblyRobot::SetExtDo(short index, short value)
     if(lastRtn)
         return lastRtnErr = RobotFailure;
 
-    lastRtn = GT_LoadExtConfig("C:/Users/df/Desktop/Googol_point_move/googol/ExtModule.cfg");
+    lastRtn = GT_LoadExtConfig("./debug/ExtModule.cfg");
     if(lastRtn)
         return lastRtnErr = RobotFailure;
 

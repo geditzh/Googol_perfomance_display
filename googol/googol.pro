@@ -24,7 +24,8 @@ HEADERS  += \
     AssemblyRobot.h \
     RobotDefine.h
 
-FORMS    += mainwindow.ui
 
-LIBS += -LC:\Users\df\Desktop\Googol_point_move\googol -lgts
-LIBS += -LC:\Users\df\Desktop\Googol_point_move\googol -lExtMdl
+win32: LIBS += -L$$PWD/./ -lgts
+
+INCLUDEPATH += $$PWD/.
+DEPENDPATH += $$PWD/.
