@@ -13,7 +13,7 @@ int main(int argc, char *argv[])    //读取文件，性能展示
     QCoreApplication e(argc, argv);
 
     vector<vector<double>> pos;
-    QFile file("./debug/display.txt");
+    QFile file("./../googol/test.txt");
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         cout<<"Can't open the file!"<<endl;
